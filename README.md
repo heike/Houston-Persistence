@@ -24,6 +24,13 @@ D](https://heike.github.io/Houston-Persistence/docs/matrix-comparisons/matrix_D.
 The visualization happens at multiple levels that are hyperlinked to
 allow the user quick navigation to “what’s interesting”.
 
+<figure>
+<img src="overview.png"
+alt="Overview image of the visualization hierarchy" />
+<figcaption aria-hidden="true">Overview image of the visualization
+hierarchy</figcaption>
+</figure>
+
 ### Barrel Visualizations
 
 The barrel visualizations consist of a set of visualizations of
