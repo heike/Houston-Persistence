@@ -6,146 +6,57 @@
 <!-- badges: start -->
 <!-- badges: end -->
 
-This repository contains the scans acquired from bullets 11 to 50 from a
-set of eleven barrels Ruger LCP.
+This repository contains visuals for the scans acquired from bullets 11
+to 50 for barrels A (and later D)
+
+Quickstart: Just follow the link to
 
 [Website for Barrel
 A](https://heike.github.io/Houston-Persistence/docs/matrix-comparisons/matrix_A.html)
 
-[Website for Barrel
-D](https://heike.github.io/Houston-Persistence/docs/matrix-comparisons/matrix_D.html)
+<!--[Website for Barrel
+D](https://heike.github.io/Houston-Persistence/docs/matrix-comparisons/matrix_D.html)-->
 
 ## Structure of the repo
 
-    -- scans
-    -- apps 
-    ... 
+## Linked View Comparisons
 
-### Folder `scans`
+The visualization happens at multiple levels that are hyperlinked to
+allow the user quick navigation to “what’s interesting”.
 
-The folder `scans` contains x3p files of the land engraved areas of each
-fired bullet. Names of the x3p files are encoded in the form:
-study-barrel-bullet-land, and conform to the regular expression:
-`HFSCP-B[123A-J]-B[1-5][0-9]-L[1-6].x3p`
+### Barrel Visualizations
 
-    -- scans
-    |   |-- Barrel A
-    |   |   |-- Bullet 11
-    |   |   |   |-- HFSCP-BA-B11-L1.x3p    
-    |   |   |   |-- HFSCP-BA-B11-L2.x3p    
-    |   |   |   |-- HFSCP-BA-B11-L3.x3p    
-    |   |   |   |-- HFSCP-BA-B11-L4.x3p    
-    |   |   |   |-- HFSCP-BA-B11-L5.x3p    
-    |   |   |   |-- HFSCP-BA-B11-L6.x3p    
-    |   |   |-- Bullet 12
-    |   |   |   |-- HFSCP-BA-B12-L1.x3p    
-    |   |   |   |-- HFSCP-BA-B12-L2.x3p    
-    |   |   |   |-- HFSCP-BA-B12-L3.x3p    
-    |   |   |   |-- HFSCP-BA-B12-L4.x3p    
-    |   |   |   |-- HFSCP-BA-B12-L5.x3p    
-    |   |   |   |-- HFSCP-BA-B12-L6.x3p    
-    ... 
+The barrel visualizations consist of a set of visualizations of
+different aspects of bullet-to-bullet comparisons.
 
-### Folder `apps`
+Underlying data has the form:
 
-The folder `apps` contains two shiny apps. Each app can be run with the
-command
+XXX include a code chunk with the head of a file of the form bullet1
+bullet2 phase_ccf
 
-`shiny::runApp("<app>.R")`
+Bullets are enumerated from 11 to 50. These numbers reflect the shot
+order, i.e. bullet 11 denotes the eleventh bullet fired through this
+barrel. The similarity between two bullets is determined by their
+`phase_ccf` (explained belowin more detail). `phase_ccf` is a number in
+\[0,1\]. Higher values of `phase_ccf` indicate higher similarity between
+two bullets.
 
-`check-crosscut.R` expects an object `bullets` in the work space (see
-`create-features.R`)
+In the visualizations, we focus on the order in which bullets are fired,
+the number of shots fired between bullets, as well as how similar
+bullets are to each other. The different visuals emphasize these aspects
+differently.
 
-``` r
-library(tidyverse)
-library(x3ptools)
-library(bulletxtrctr)
+The **Barrel Matrix** is a tile map (clustered or unclustered). Focus is
+on the position of of the bullet. Similarity is shown by color
+saturation.
 
-bullets <- bulletxtrctr::read_bullet("scans/Barrel A/Bullet 11/") # just to try out with one bullet
-bullets <- bulletxtrctr::read_bullet("scans/Barrel A/") # full barrel
-bullets <- bullets %>% mutate(
-  land_id = gsub(".x3p", "",basename(source)),
-  cc = x3p %>% purrr::map_dbl(.f = bulletxtrctr::x3p_crosscut_optimize)
-)
-shiny::runApp("apps/check-crosscut.R")
-```
+The **Variogram** focuses on the relationship between the distance
+between fired bullets and their similarity to each other. We would
+expect that the similarity between two bullets (slowly) decreases with
+the use the barrel experiences between these two bullets, i.e. we would
+exptect to have the most similarity between bullets from successive
+fires, and the least similarity between bullets 11 and 50.
 
-![](images/check-crosscut-screenshot.png)
+### Bullet Matrix
 
-`check-grooves.R` expects an object `grooves` in the work space (see
-`create-features.R`)
-
-``` r
-resolution <- x3p %>% x3p_get_scale()
-
-# extract 10 lines from the scan at height cc
-bullets <- bullets %>% mutate(
-  ccdata = purrr::map2(.f = bulletxtrctr::x3p_crosscut, .x=x3p, .y = cc, 
-                       range = 10*resolution) 
-)
-
-bullets <- bullets %>% mutate(
-  grooves_pred = ccdata %>% purrr::map(.f = bulletxtrctr::cc_locate_grooves, 
-                                       return_plot = TRUE)
-)
-
-grooves <- bullets$grooves_pred
-shiny::runApp("apps/check-grooves.R")
-
-bullets$grooves <- grooves
-```
-
-![](images/check-grooves-screenshot.png)
-
-Extract the signal for each land:
-
-``` r
-meta <- read.csv("meta.csv")
-meta$source <- gsub("//", "/", meta$source)
-bullets <- bulletxtrctr::read_bullet("scans/Barrel A/Bullet 37/") # just to try out with one bullet
-bullets$source <- gsub("//", "/", bullets$source)
-
-bullets <- bullets %>% left_join(meta %>% select(land_id, damaged, source, cc, groove_left, groove_right), by="source")
-
-resolution <- bullets$x3p[[1]] %>% x3p_get_scale()
-
-bullets <- bullets %>% mutate(
-  ccdata = purrr::map2(.x = x3p, .y = cc, .f = x3p_crosscut, range = 10*resolution)
-)
-
-# summarise ccdata
-bullets <- bullets %>% mutate(
-  ccdata = ccdata %>% purrr::map(.f = function(df) {
-    df <- df %>% mutate(x_bin = round(x/resolution))
-    df %>% group_by(x_bin) %>% 
-      summarize(
-        value = mean(value, na.rm=TRUE),
-        y = mean(y, na.rm=TRUE)
-        ) %>% ungroup() %>%
-      mutate(
-        x = x_bin*resolution
-      ) %>% select(-x_bin)
-  })
-)
-
-
-
-bullets <- bullets %>% mutate(
-  grooves = purrr::map2(.x = groove_left, .y=groove_right, 
-                        function(x,y) list(groove=c(x,y))),
-  signal = purrr::map2(.x = ccdata, .y = grooves, .f = function(ccdata, gg) {
-    cc_get_signature(ccdata, gg, span1 = 0.75, span2=0.03)
-  })
-)
-
-bullets %>% unnest(cols = signal) %>%
-  ggplot(aes(x = x, y = sig)) + geom_line()+
-  facet_grid(~land_id) + ylim(-10,10) + 
-  ggtitle("Bullet 37")
-```
-
-![](signals-b11.png) ![](signals-b37.png)
-
-After staring at these signals long enough, we see that land 5 in bullet
-11 matches land 6 in bullet 37. Therefore land 4 in bullet 11 should
-match land 5, land 3 should match land 4, and so on.
+### Land-to-Land Comparisons
