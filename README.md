@@ -64,6 +64,13 @@ the use the barrel experiences between these two bullets, i.e. we would
 exptect to have the most similarity between bullets from successive
 fires, and the least similarity between bullets 11 and 50.
 
+The **Scatterplot** shows positions of each bullet along the `x` axis,
+and maps all of the comparison values with all other bullets on the `y`
+axis. In the clustered view, scores for the same bullet are connected by
+a line. This allows us to see, whether there are any clusters of bullets
+in the data and , in the case of that clusters exist, which bullets
+cluster with each other.
+
 ### Bullet Matrix
 
 ### Land-to-Land Comparisons
