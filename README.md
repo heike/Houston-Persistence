@@ -10,10 +10,10 @@ This repository contains the scans acquired from bullets 11 to 50 from a
 set of eleven barrels Ruger LCP.
 
 [Website for Barrel
-A](https://heike.github.io/Houston-Persistence/matrix-comparisons/matrix_A.html)
+A](https://heike.github.io/Houston-Persistence/docs/matrix-comparisons/matrix_A.html)
 
 [Website for Barrel
-D](https://heike.github.io/Houston-Persistence/matrix-comparisons/matrix_D.html)
+D](https://heike.github.io/Houston-Persistence/docs/matrix-comparisons/matrix_D.html)
 
 ## Structure of the repo
 
