@@ -12,7 +12,7 @@ to 50 for barrels A (and later D)
 Quickstart: Just follow the link to
 
 [Website for Barrel
-A](https://heike.github.io/Houston-Persistence/docs/matrix-comparisons/matrix_A.html)
+A](https://heike.github.io/Houston-Persistence/barrel-tiles-with-maps.html)
 
 <!--[Website for Barrel
 D](https://heike.github.io/Houston-Persistence/docs/matrix-comparisons/matrix_D.html)-->
