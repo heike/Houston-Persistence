@@ -6,7 +6,7 @@
 <!-- badges: start -->
 <!-- badges: end -->
 
-This repository contains visuals for the scans acquired from bullets 11
+This [repository](https://github.com/heike/Houston-Persistence) contains visuals for the scans acquired from bullets 11
 to 50 for barrels A (and later D)
 
 Quickstart: Just follow the link to
